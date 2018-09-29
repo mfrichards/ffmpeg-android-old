@@ -1,0 +1,53 @@
+The following modifications have been made to the original ffmpeg 0.8.10 build
+scripts for use in MyTunes Music Manager:
+
+
+1) 12/15/2012 - Modified the "configure" script in the root directory to set the
+   "soname" configuration parameter in a manner compatible with Android. Also
+   added additional optimation flags for compilation. For comparison, the original
+   file has been saved as "configure.original". Diff output from the 2 files:
+
+73d72
+<   --soname-prefix=PREFIX   add PREFIX before the libraries soname
+217d215
+<   --optimization-flags=FLAGS use FLAGS instead of the optimization flags chosen by other options []
+1172d1169
+<     soname_prefix
+1196d1192
+<     optimization_flags
+1653d1648
+< soname_prefix_default=""
+1704c1699
+< SHFLAGS='-shared -Wl,-soname,$$(SONAME_PREFIX)$$(@F)'
+---
+> SHFLAGS='-shared -Wl,-soname,$$(@F)'
+3081,3085d3075
+< if test "$optimization_flags" != ""; then
+<     size_cflags="$optimization_flags"
+<     speed_cflags="$optimization_flags"
+<     noopt_cflags="$optimization_flags"
+< fi
+3352d3341
+< SONAME_PREFIX=$soname_prefix
+
+
+2) 12/15/2012 - Modified the "subdir.mak" script in the root directory to set the
+   "soname" configuration parameter in a manner compatible with Android. For
+   comparison, the original file has been saved as "subdir.mak.original".
+   Diff output from the 2 files:
+
+39c39,42
+< $(SUBDIR)$(SLIBNAME): $(OBJS) $(SUBDIR)lib$(NAME).ver
+---
+> $(SUBDIR)$(SLIBNAME): $(SUBDIR)$(SLIBNAME_WITH_MAJOR)
+> 	$(Q)cd ./$(SUBDIR) && $(LN_S) $(SLIBNAME_WITH_MAJOR) $(SLIBNAME)
+> 
+> $(SUBDIR)$(SLIBNAME_WITH_MAJOR): $(OBJS) $(SUBDIR)lib$(NAME).ver
+45c48
+< $(SUBDIR)$(SLIBNAME): $(DEP_LIBS)
+---
+> $(SUBDIR)$(SLIBNAME_WITH_MAJOR): $(DEP_LIBS)
+
+
+No other changes were made to the ffmpeg-0.8.10 distribution package.
+
